@@ -48,7 +48,7 @@ spring:
 logging:
   level:
     root: info #Padrao Info
-    org.springframework.boot : TRACE
+    #org.springframework.boot : TRACE
     #net.sf.jasperreports.engine.*: TRACE
     #br.com.oliveirawillian: DEBUG
 
