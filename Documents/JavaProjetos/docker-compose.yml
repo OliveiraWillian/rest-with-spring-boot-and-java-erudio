@@ -1,0 +1,45 @@
+version: '3.4'
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: rest_with_spring_boot_erudio
+    ports:
+      - "5434:5432"
+    expose:
+      - 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dev.oliveira-network
+
+  rest-with-spring-boot-and-java-erudio:
+    image: oliveirawilliandev/rest-with-spring-boot-and-java-erudio
+    restart: always
+    build: ./rest-with-spring-boot-and-java-erudio
+    working_dir: /rest-with-spring-boot-and-java-erudio
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/rest_with_spring_boot_erudio?useTimezone=true&serverTimezone=UTC
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING.DATASOURCE.PASSWORD: 123456
+    command: mvn spring-boot:run
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    networks:
+      - dev.oliveira-network
+
+volumes:
+  postgres_data:
+
+networks:
+  dev.oliveira-network:
+    driver: bridge

@@ -1,0 +1,59 @@
+
+
+cors:
+  originPatterns: http://localhost:8080,http://localhost:3000,https://erudio.com.br
+file:
+  upload-dir: /Code/UploadDir
+
+email:
+  subject: "Default Subject"
+  message: "Default Message"
+
+spring:
+  application:
+    name: rest-with-spring-boot-and-java-erudio
+  datasource:
+    drive-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/rest_with_spring_boot_erudio?useTimezone=true&serverTimezone=UTC
+    username: postgres
+    password: 123456
+    #driver-class-name: org.postgresql.Driver   Recomendação GPT
+
+  jpa:
+    hibernate:
+      ddl-auto: none   # pode ser 'validate', 'create', 'update' ou 'create-drop'
+    #database-platform: org.hibernate.dialect.PostgreSQLDialect    Recomendação GPT
+    properties:
+     hibernate:
+    show-sql: false        # opcional, útil para debug
+    open-in-view: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enabled: true
+      mail.smtp.starttls.required: true
+
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+
+logging:
+  level:
+    root: info #Padrao Info
+    org.springframework.boot : TRACE
+    #net.sf.jasperreports.engine.*: TRACE
+    #br.com.oliveirawillian: DEBUG
+
+
+spring-doc:
+  paths-to-match: /api/**/v1/**
+  swagger-ui:
+    use-root-path: true
