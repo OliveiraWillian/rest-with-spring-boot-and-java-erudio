@@ -157,6 +157,9 @@
             entityLoaded.setLastName(personDTO.getLastName());
             entityLoaded.setAddress(personDTO.getAddress());
             entityLoaded.setGender(personDTO.getGender());
+            entityLoaded.setEnabled(personDTO.getEnabled());
+            entityLoaded.setPhotoUrl(personDTO.getPhotoUrl());
+            entityLoaded.setProfileUrl(personDTO.getProfileUrl());
             var entityPersisted = personRepository.save(entityLoaded);
 
             var dtoPersisted = personMapper.toDTO(entityPersisted);

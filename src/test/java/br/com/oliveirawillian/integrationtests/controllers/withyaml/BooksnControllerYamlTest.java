@@ -2,7 +2,9 @@ package br.com.oliveirawillian.integrationtests.controllers.withyaml;
 
 import br.com.oliveirawillian.config.TestConfigs;
 import br.com.oliveirawillian.integrationtests.controllers.withyaml.mapper.YAMLMapper;
+import br.com.oliveirawillian.integrationtests.dto.AccountCredentialsDTO;
 import br.com.oliveirawillian.integrationtests.dto.BooksDTO;
+import br.com.oliveirawillian.integrationtests.dto.TokenDTO;
 import br.com.oliveirawillian.integrationtests.dto.wrappers.xml.PageModelBooks;
 import br.com.oliveirawillian.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,17 +35,50 @@ class BooksnControllerYamlTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
     private static YAMLMapper objectMapper;
     private static BooksDTO booksDTO;
+    private static TokenDTO tokenDTO;
+
     @BeforeAll
     static void setUp() {
         objectMapper = new YAMLMapper();
-
+        tokenDTO = new TokenDTO();
 
         booksDTO = new BooksDTO();
 
 
     }
 
+    @Test
+    @Order(0)
+    void signin() throws JsonProcessingException {
+        AccountCredentialsDTO accountCredentialsDTO = new AccountCredentialsDTO("leandro", "admin123");
 
+        tokenDTO = given().config(
+                        RestAssuredConfig.config()
+                                .encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(MediaType.APPLICATION_YAML_VALUE, ContentType.TEXT))
+                )
+
+
+                .basePath("/auth/signin")
+                .port(TestConfigs.SERVER_PORT)
+                .contentType(MediaType.APPLICATION_YAML_VALUE)
+                .accept(MediaType.APPLICATION_YAML_VALUE)
+                .body(accountCredentialsDTO,objectMapper)
+                .when()
+                .post()
+                .then()
+                .statusCode(200)
+                .contentType(MediaType.APPLICATION_YAML_VALUE)
+                .extract()
+                .body()
+                .as(TokenDTO.class, objectMapper);
+
+
+
+        assertNotNull(tokenDTO.getAccessToken());
+        assertNotNull(tokenDTO.getRefreshToken());
+
+
+    }
 
 
 
@@ -53,6 +88,8 @@ class BooksnControllerYamlTest extends AbstractIntegrationTest {
         mockBooks();
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_ERUDIO)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION,"Bearer " + tokenDTO.getAccessToken())
+
                 .setBasePath("/api/books/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                     .addFilter(new RequestLoggingFilter(LogDetail.ALL))

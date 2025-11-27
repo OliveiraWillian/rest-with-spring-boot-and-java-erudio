@@ -4,10 +4,13 @@ package br.com.oliveirawillian.integrationtests.dto;
 //import com.fasterxml.jackson.annotation.JsonProperty;
 //import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import br.com.oliveirawillian.model.Books;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 @XmlRootElement
 public class PersonDTO  implements Serializable {
@@ -17,15 +20,43 @@ public class PersonDTO  implements Serializable {
     private String firstName;
     private String lastName;
     private String address;
-
     private String gender;
     private Boolean enabled;
+    private String photoUrl;
+    private String ProfileUrl;
+
+    @JsonIgnore
+    private List<Books> books;
 
     public PersonDTO() {
     }
 
     public Long getId() {
         return id;
+    }
+
+    public List<Books> getBooks() {
+        return books;
+    }
+
+    public String getProfileUrl() {
+        return ProfileUrl;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        ProfileUrl = profileUrl;
+    }
+
+    public void setBooks(List<Books> books) {
+        this.books = books;
     }
 
     public void setId(Long id) {
@@ -75,11 +106,11 @@ public class PersonDTO  implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof PersonDTO personDTO)) return false;
-        return Objects.equals(id, personDTO.id) && Objects.equals(firstName, personDTO.firstName) && Objects.equals(lastName, personDTO.lastName) && Objects.equals(address, personDTO.address) && Objects.equals(gender, personDTO.gender) && Objects.equals(enabled, personDTO.enabled);
+        return Objects.equals(id, personDTO.id) && Objects.equals(firstName, personDTO.firstName) && Objects.equals(lastName, personDTO.lastName) && Objects.equals(address, personDTO.address) && Objects.equals(gender, personDTO.gender) && Objects.equals(enabled, personDTO.enabled) && Objects.equals(photoUrl, personDTO.photoUrl) && Objects.equals(ProfileUrl, personDTO.ProfileUrl) && Objects.equals(books, personDTO.books);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, address, gender, enabled);
+        return Objects.hash(id, firstName, lastName, address, gender, enabled, photoUrl, ProfileUrl, books);
     }
 }

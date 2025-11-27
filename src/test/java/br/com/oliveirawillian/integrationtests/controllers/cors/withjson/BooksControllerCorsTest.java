@@ -1,7 +1,9 @@
 package br.com.oliveirawillian.integrationtests.controllers.cors.withjson;
 
 import br.com.oliveirawillian.config.TestConfigs;
+import br.com.oliveirawillian.integrationtests.dto.AccountCredentialsDTO;
 import br.com.oliveirawillian.integrationtests.dto.BooksDTO;
+import br.com.oliveirawillian.integrationtests.dto.TokenDTO;
 import br.com.oliveirawillian.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -31,12 +33,37 @@ class BooksControllerCorsTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
     private static ObjectMapper objectMapper;
     private static BooksDTO booksDTO;
+    private static TokenDTO tokenDTO;
     @BeforeAll
     static void setUp() {
         objectMapper = new ObjectMapper();
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         booksDTO = new BooksDTO();
+        tokenDTO = new TokenDTO();
+
+
+    }
+
+    @Test
+    @Order(0)
+    void signin() {
+        AccountCredentialsDTO accountCredentialsDTO = new AccountCredentialsDTO("leandro", "admin123");
+        tokenDTO = given()
+                .basePath("/auth/signin")
+                .port(TestConfigs.SERVER_PORT)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(accountCredentialsDTO)
+                .when()
+                .post()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(TokenDTO.class);
+
+        assertNotNull(tokenDTO.getAccessToken());
+        assertNotNull(tokenDTO.getRefreshToken());
 
 
     }
@@ -48,6 +75,8 @@ class BooksControllerCorsTest extends AbstractIntegrationTest {
     void createWithWrongOrigin() throws JsonProcessingException {
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_SEMERU)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION,"Bearer " + tokenDTO.getAccessToken())
+
                 .setBasePath("/api/books/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                     .addFilter(new RequestLoggingFilter(LogDetail.ALL))
@@ -77,6 +106,8 @@ class BooksControllerCorsTest extends AbstractIntegrationTest {
         mockBooks();
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_ERUDIO)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION,"Bearer " + tokenDTO.getAccessToken())
+
                 .setBasePath("/api/books/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                     .addFilter(new RequestLoggingFilter(LogDetail.ALL))
@@ -119,6 +150,8 @@ class BooksControllerCorsTest extends AbstractIntegrationTest {
 
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_LOCAL)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION,"Bearer " + tokenDTO.getAccessToken())
+
                 .setBasePath("/api/books/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
@@ -158,6 +191,8 @@ class BooksControllerCorsTest extends AbstractIntegrationTest {
 
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_SEMERU)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION,"Bearer " + tokenDTO.getAccessToken())
+
                 .setBasePath("/api/books/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))

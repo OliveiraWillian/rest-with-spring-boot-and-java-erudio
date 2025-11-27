@@ -1,7 +1,9 @@
 package br.com.oliveirawillian.integrationtests.controllers.withxml;
 
 import br.com.oliveirawillian.config.TestConfigs;
+import br.com.oliveirawillian.integrationtests.dto.AccountCredentialsDTO;
 import br.com.oliveirawillian.integrationtests.dto.BooksDTO;
+import br.com.oliveirawillian.integrationtests.dto.TokenDTO;
 import br.com.oliveirawillian.integrationtests.dto.wrappers.xml.PageModelBooks;
 import br.com.oliveirawillian.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,31 +33,65 @@ class BooksControllerXmlTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
     private static XmlMapper objectMapper;
     private static BooksDTO booksDTO;
+    private static TokenDTO tokenDTO;
+
     @BeforeAll
     static void setUp() {
         objectMapper = new XmlMapper();
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         booksDTO = new BooksDTO();
+        tokenDTO = new TokenDTO();
+
 
 
     }
 
 
+    @Test
+    @Order(0)
+    void signin() throws JsonProcessingException {
+        AccountCredentialsDTO accountCredentialsDTO = new AccountCredentialsDTO("leandro", "admin123");
+        var content =
+                given()
+                        .basePath("/auth/signin")
+                        .port(TestConfigs.SERVER_PORT)
+                        .contentType(MediaType.APPLICATION_XML_VALUE)
+                        .accept(MediaType.APPLICATION_XML_VALUE)
+                        .body(accountCredentialsDTO)
+                        .when()
+                        .post()
+                        .then()
+                        .statusCode(200)
+                        .contentType(MediaType.APPLICATION_XML_VALUE)
+                        .extract()
+                        .body()
+                        .asString();
 
+        TokenDTO createdTokenDTO = objectMapper.readValue(content, TokenDTO.class);
+        tokenDTO = createdTokenDTO;
+
+        assertNotNull(tokenDTO.getAccessToken());
+        assertNotNull(tokenDTO.getRefreshToken());
+
+        specification = new RequestSpecBuilder()
+                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_ERUDIO)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION,"Bearer " + tokenDTO.getAccessToken())
+
+                .setBasePath("/api/books/v1")
+                .setPort(TestConfigs.SERVER_PORT)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+
+    }
 
 
     @Test
     @Order(1)
     void createTest() throws JsonProcessingException {
         mockBooks();
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_ERUDIO)
-                .setBasePath("/api/books/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
 
         var content = given(specification)
                 .contentType(MediaType.APPLICATION_XML_VALUE)

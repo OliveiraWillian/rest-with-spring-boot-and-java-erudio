@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: br.com.oliveirawillian.integrationtests.controllers.cors.withjson.BooksControllerCorsTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.18 s -- in br.com.oliveirawillian.integrationtests.controllers.cors.withjson.BooksControllerCorsTest

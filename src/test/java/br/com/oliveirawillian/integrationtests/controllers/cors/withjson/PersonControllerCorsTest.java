@@ -1,7 +1,9 @@
 package br.com.oliveirawillian.integrationtests.controllers.cors.withjson;
 
 import br.com.oliveirawillian.config.TestConfigs;
+import br.com.oliveirawillian.integrationtests.dto.AccountCredentialsDTO;
 import br.com.oliveirawillian.integrationtests.dto.PersonDTO;
+import br.com.oliveirawillian.integrationtests.dto.TokenDTO;
 import br.com.oliveirawillian.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -26,12 +28,38 @@ class PersonControllerCorsTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
     private static ObjectMapper objectMapper;
     private static PersonDTO personDTO;
+    private static TokenDTO tokenDTO;
+
+
     @BeforeAll
     static void setUp() {
         objectMapper = new ObjectMapper();
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         personDTO = new PersonDTO();
+        tokenDTO = new TokenDTO();
+
+
+    }
+    @Test
+    @Order(0)
+    void signin() {
+        AccountCredentialsDTO accountCredentialsDTO = new AccountCredentialsDTO("leandro", "admin123");
+        tokenDTO = given()
+                .basePath("/auth/signin")
+                .port(TestConfigs.SERVER_PORT)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(accountCredentialsDTO)
+                .when()
+                .post()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(TokenDTO.class);
+
+        assertNotNull(tokenDTO.getAccessToken());
+        assertNotNull(tokenDTO.getRefreshToken());
 
 
     }
@@ -42,7 +70,8 @@ class PersonControllerCorsTest extends AbstractIntegrationTest {
     @Order(2)
     void createWithWrongOrigin() throws JsonProcessingException {
         specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_SEMERU)
+               .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_SEMERU)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION,"Bearer " + tokenDTO.getAccessToken())
                 .setBasePath("/api/person/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                     .addFilter(new RequestLoggingFilter(LogDetail.ALL))
@@ -72,6 +101,7 @@ class PersonControllerCorsTest extends AbstractIntegrationTest {
         mockPerson();
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_ERUDIO)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION,"Bearer " + tokenDTO.getAccessToken())
                 .setBasePath("/api/person/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                     .addFilter(new RequestLoggingFilter(LogDetail.ALL))
@@ -115,6 +145,7 @@ class PersonControllerCorsTest extends AbstractIntegrationTest {
 
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_LOCAL)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION,"Bearer " + tokenDTO.getAccessToken())
                 .setBasePath("/api/person/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
@@ -153,7 +184,8 @@ class PersonControllerCorsTest extends AbstractIntegrationTest {
     void findByIdWithWrongOrigin() throws JsonProcessingException {
 
         specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_SEMERU)
+               .addHeader(TestConfigs.HEADER_PARAM_ORIGIN,TestConfigs.ORIGIN_SEMERU)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION,"Bearer " + tokenDTO.getAccessToken())
                 .setBasePath("/api/person/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
