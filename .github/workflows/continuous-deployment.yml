@@ -3,7 +3,7 @@ name:Continuus Integration and Delivery with Github Actions
 on:
   push:
     branches:
-      - "main"
+      - main
 
 
 jobs:
