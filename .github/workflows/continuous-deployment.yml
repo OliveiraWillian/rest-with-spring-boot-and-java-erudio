@@ -3,12 +3,13 @@ name: Continuus Integration and Delivery with Github Actions
 on:
   push:
     branches:
-      - main
+      - "main"
 
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,7 +24,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '21'
-          distribution: 'temurin' # See 'Supported distributions' for available options
+          distribution: 'adopt'
           cache: maven
 
       - name: Build Application .jar
