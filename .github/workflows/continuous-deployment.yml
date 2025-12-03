@@ -28,7 +28,7 @@ jobs:
           cache: maven
 
       - name: Build Application .jar
-        working-directory: ./Projeto/
+        working-directory: ./Projeto
         run: mvn clean package -DskipTests
 
 
