@@ -25,6 +25,21 @@ jobs:
           java-version: '21'
           distribution: 'temurin' # See 'Supported distributions' for available options
           cache: maven
-          
+
+      - name: Build Application .jar
+        working-directory: ../
+        run: mvn clean package
+
+
+      - name: Docker Compose Build
+        working-directory: ./
+        run: docker compose build
+
+      - name: Push to Docker Hub Container Registry
+        run: |
+          docker tag ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-and-java-erudio:latest ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-and-java-erudio:${{github.run_id}}
+          docker push ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-and-java-erudio:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-and-java-erudio:${{github.run_id}}
+
 
 
