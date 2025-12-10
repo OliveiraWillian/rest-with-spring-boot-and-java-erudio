@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 @Bean
     OpenAPI customOpenAPI(){
-        return new OpenAPI().info(new Info().title("Rest API's RESTfull 0 with Java, Spring Boot, Kubernetes and Docker")
+        return new OpenAPI().info(new Info().title("Rest API's RESTfull 0 with Java, Spring Boot, Kubernetes and Docker - Foo Bar")
                 .version("v1").description("Rest API's RESTfull 0 with Java, Spring Boot, Kubernetes and Docker")
                 .termsOfService("WillianFerreiradeOliveira.com").license(new License().name("Apache 2.0").url("WillianFerreiradeOliveira.com")));
     };
