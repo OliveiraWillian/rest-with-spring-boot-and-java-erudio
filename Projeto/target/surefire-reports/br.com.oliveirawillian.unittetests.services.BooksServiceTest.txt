@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: br.com.oliveirawillian.unittetests.services.BooksServiceTest
 -------------------------------------------------------------------------------
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 1.164 s -- in br.com.oliveirawillian.unittetests.services.BooksServiceTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0.478 s -- in br.com.oliveirawillian.unittetests.services.BooksServiceTest

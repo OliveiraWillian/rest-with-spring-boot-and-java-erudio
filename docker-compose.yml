@@ -37,8 +37,22 @@ services:
     networks:
       - dev.oliveira-network
 
+  portainer:
+    image: portainer/portainer-ce:latest
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - partainer_data:/data
+    networks:
+      - dev.oliveira-network
+
+
+
 volumes:
   postgres_data:
+  partainer_data:
 
 networks:
   dev.oliveira-network:

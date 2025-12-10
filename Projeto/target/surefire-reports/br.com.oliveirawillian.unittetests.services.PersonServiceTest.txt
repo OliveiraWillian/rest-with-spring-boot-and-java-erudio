@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: br.com.oliveirawillian.unittetests.services.PersonServiceTest
 -------------------------------------------------------------------------------
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0.137 s -- in br.com.oliveirawillian.unittetests.services.PersonServiceTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0.178 s -- in br.com.oliveirawillian.unittetests.services.PersonServiceTest
